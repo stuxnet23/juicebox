@@ -19,13 +19,17 @@ jobs:
 
       - trivy-orb/scan:
           args: --exit-code 1 --severity MEDIUM,HIGH,CRITICAL image juicebox
-            #if [ $? -eq 1 ]; then
-             #  echo "Vulnerabilities found. Blocking deployment."
-              # exit 1
-            #else
-             #  echo "No vulnerabilities found. Proceeding with deployment."
-               #Deploy your Docker image here
-            #fi
+    
+      - run: 
+         name: check if commanf failed or passed 
+         command: |
+           if [ $? -eq 1 ]; then
+              echo "Error: The command exited with code 1. Build failed."
+              exit 1
+           else
+              echo "Command executed successfully."
+           fi
+
       - run: 
          name: Log into docker and publish file
          command: | 
