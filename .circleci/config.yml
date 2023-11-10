@@ -18,13 +18,13 @@ jobs:
           docker_layer_caching: true
       - trivy-orb/scan:
           args: --exit-code 1 --severity MEDIUM,HIGH,CRITICAL image juicebox
-#         if [ $? -eq 1 ]; then
-#            echo "Vulnerabilities found. Blocking deployment."
-#              exit 1
-#          else
-#            echo "No vulnerabilities found. Proceeding with deployment."
-#            #Deploy your Docker image here
-#          fi
+          if [ $? -eq 1 ]; then
+             echo "Vulnerabilities found. Blocking deployment."
+               exit 1
+          else
+             echo "No vulnerabilities found. Proceeding with deployment."
+             #Deploy your Docker image here
+          fi
       - run: 
          name: Log into docker and publish file
          command: | 
