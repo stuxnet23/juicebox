@@ -29,5 +29,5 @@ jobs:
 
 workflows:
   build-deploy:
-    jobs:
+    jobs: 
       - build_and_deploy
