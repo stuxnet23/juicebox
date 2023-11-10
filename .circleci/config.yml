@@ -1,0 +1,33 @@
+version: 2.1
+
+orbs:
+  trivy-orb: fifteen5/trivy-orb@1.0.0
+
+jobs:
+  build_and_deploy:
+    docker:
+      - image: cimg/base:2023.11
+    steps:
+      - checkout
+
+      - run:
+          name: Build dockerfile Docker Image
+          command: docker build -t juicebox .
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - trivy-orb/scan:
+          args: --exit-code 1 image juicebox
+
+      - run: 
+         name: Log into docker and publish file
+         command: | 
+           docker login -u $user -p $password
+           docker tag juicebox stuxnet23/juicebox           
+           docker push stuxnet23/juicebox
+
+workflows:
+  build-deploy:
+    jobs:
+      - build_and_deploy
