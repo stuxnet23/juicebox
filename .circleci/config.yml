@@ -18,20 +18,20 @@ jobs:
          name: Run Trivy Scan
          command: |
            sudo curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh |sudo sh -s -- -b /usr/local/bin
-           trivy --exit-code 0 image juicebox
-           if [ $? -eq 1 ]; then
-              echo "Vulnerabilities found. Blocking deployment."
-              exit 1
-           else
-             echo "No vulnerabilities found. Proceeding with deployment."
+           trivy image --exit-code 1 --severity CRITICAL juicebox
+           #if [ $? -eq 1 ]; then
+            #  echo "Vulnerabilities found. Blocking deployment."
+            #  exit 1
+           #else
+           #  echo "No vulnerabilities found. Proceeding with deployment."
            #Deploy your Docker image here
-           fi
+           #fi
 
       - run: 
          name: Log into docker and publish file
          command: | 
            docker login -u $user -p $password
-           docker -t image juicebox stuxnet23/juicebox           
+           docker tag  juicebox stuxnet23/juicebox           
            docker push stuxnet23/juicebox
 
 workflows:
