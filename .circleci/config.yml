@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  trivy-orb: fifteen5/trivy-orb@1.0.0
-
 jobs:
   build_and_deploy:
     docker:
@@ -11,33 +8,34 @@ jobs:
       - checkout
 
       - run:
-          name: Build dockerfile Docker Image
+          name: Build juicebox Docker Image
           command: docker build -t juicebox .
 
       - setup_remote_docker:
           docker_layer_caching: true
 
-      - trivy-orb/scan:
-          args: --exit-code 1  image juicebox
-    
-      - run: 
-         name: check if commanf failed or passed 
+      - run:
+         name: Run Trivy Scan
          command: |
+           sudo curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh |sudo sh -s -- -b /usr/local/bin
+           trivy --exit-code 1 image juicebox
            if [ $? -eq 1 ]; then
-              echo "Error: The command exited with code 1. Build failed."
+              echo "Vulnerabilities found. Blocking deployment."
               exit 1
            else
-              echo "Command executed successfully."
+             echo "No vulnerabilities found. Proceeding with deployment."
+           #Deploy your Docker image here
            fi
 
       - run: 
          name: Log into docker and publish file
          command: | 
            docker login -u $user -p $password
-           docker tag juicebox stuxnet23/juicebox           
+           docker -t image juicebox stuxnet23/juicebox           
            docker push stuxnet23/juicebox
 
 workflows:
   build-deploy:
-    jobs: 
+    jobs:
       - build_and_deploy
+      
