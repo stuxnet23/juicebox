@@ -18,7 +18,7 @@ jobs:
          name: Run Trivy Scan
          command: |
            sudo curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh |sudo sh -s -- -b /usr/local/bin
-           trivy image --exit-code 0 --severity CRITICAL juicebox
+           trivy image --exit-code 1 --severity CRITICAL juicebox
            
       - run: 
          name: Log into docker and publish file
